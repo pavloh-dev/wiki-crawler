@@ -29,6 +29,8 @@ def parser(url, depth):
             except HTTPError as exception:
                 if exception.code == 404:
                     print('404 Error. Exiting...')
+                elif exception.code == 403:
+                    print('Access Denied')
                 else:
                     raise
 
@@ -41,7 +43,7 @@ def interface():
     while True:
         try:
             print('''Welcome to Wikipedia URL Crawler, please, choose operation:
-                1. Search
+                1. Search mode (crawl)
                 2. Terminate (exit)
                 ''')
             oper = int(input('Enter your choose: '))
@@ -57,6 +59,7 @@ def interface():
                 break
             if oper == 2:
                 return SystemExit
+            assert KeyboardInterrupt
         except ValueError or KeyboardInterrupt:
             print("Invalid Data... try again")
             return SystemExit
