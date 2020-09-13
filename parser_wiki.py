@@ -10,7 +10,7 @@ def parser(url, depth):
         return None
 
     match = re.compile(r'(/wiki/)+()+')
-    html = urlopen(url)
+    html = urlopen(url, timeout=50)
     soup = BeautifulSoup(html, 'html.parser')
     links = soup.find("div", {"id": "bodyContent"}).find_all("a", href=match)
 
@@ -24,13 +24,12 @@ def parser(url, depth):
                     count += 1
                     names = link['title']
                     parser("https://en.wikipedia.org" + link['href'], depth - 1)
-                    f.writerow([count, names, link])
+
+                    f.writerow([count, names, url])
 
             except HTTPError as exception:
                 if exception.code == 404:
                     print('404 Error. Exiting...')
-                elif exception.code == 403:
-                    print('Access Denied')
                 else:
                     raise
 
@@ -43,7 +42,7 @@ def interface():
     while True:
         try:
             print('''Welcome to Wikipedia URL Crawler, please, choose operation:
-                1. Search mode (crawl)
+                1. Search
                 2. Terminate (exit)
                 ''')
             oper = int(input('Enter your choose: '))
@@ -59,15 +58,16 @@ def interface():
                 break
             if oper == 2:
                 return SystemExit
-            assert KeyboardInterrupt
         except ValueError or KeyboardInterrupt:
             print("Invalid Data... try again")
             return SystemExit
 
 
+
 # initialize function using call from interface -> parser
 if __name__ == '__main__':
     # print output to .csv in row as raw data (could be some out of bounds in indexing rows numbers)
-    f = csv.writer(open('../test.csv', 'w'))
-    f.writerow(['#', 'Title', 'Link'])
+    f = csv.writer(open('test.csv', 'w'))
+    f.writerow(['#', 'title', 'link'])
     interface()
+
