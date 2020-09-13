@@ -120,7 +120,10 @@ class WikiParser(ParserThread):
         all_links = self.get_wiki_links_from_url(url)
         wiki_links = self.filter_links(all_links)
 
-        # ..........................................
+        for link in all_links:
+            if ':' not in link['href']:
+                self.parse_links(url, current_depth)
+                f.writerow(['#', url, current_depth])
 
         for wiki_link in wiki_links:
             wiki_url = "https://en.wikipedia.org" + wiki_link['href']
@@ -131,6 +134,11 @@ class WikiParser(ParserThread):
 
 
 if __name__ == "__main__":
+    file = 'sample_data.csv'
+    files = './sample_data.csv'
+    subset = open(file, 'w')
+    f = csv.writer(subset)
+    f.writerow(['level', 'title', 'link'])
     parser = WikiParser("https://en.wikipedia.org/wiki/Google_Talk")
     create_threads()
     print(parser.parse_links())
